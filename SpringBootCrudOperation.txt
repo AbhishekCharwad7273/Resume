@@ -1,0 +1,156 @@
+1)Entity
+
+create User table
+
+@Entity
+public class User
+{
+
+@Id
+@GeneratedType
+private int userId;
+private String name;
+private String email;
+private String address;
+
+public void setUserId(int userId)
+{
+	this.userId=userId;
+}
+
+public int getId()
+{
+	return id;
+}
+
+Public String setName(String name)
+{
+	this.name=name;
+}
+
+public String getName()
+{
+	return name;
+}
+
+public String setEmail(String email)
+{
+	this.email=email;
+}
+public String getEmail()
+{
+	return email;
+}
+public String setAddress(String address)
+{
+	this.address=address;
+}
+public String getAddress()
+{
+	return address;
+}
+
+public User()
+{
+}
+
+public User(int userid,String name,String email,String address)
+{
+	this.userId=userId;
+	this.name=name;
+	this.email=email;
+	this.address=address;
+}
+
+2)Repository
+
+public interface UserRepo implements JpaRepository<User,Integer>
+{
+}
+
+set database propertise in application.propertise
+spring.datasource.url="jdbc:mysql://localhost:3306/dbname
+spring.datasource.username="";
+spring.datasource.password="";
+
+3)service layer
+as per good practices we create 1 interface and 1 class implement service layer
+
+1)UserServiceImpl interface
+
+public User createUser(User user)
+
+public User getUserById(String userId)
+
+public List<User>getAllUser()
+
+public void deleteUser(String userId)
+
+2)UserService class
+
+first inject a repository to access jpa functionality
+
+@Autowired
+private UserRepo userRepo;
+
+
+public User createUser(User user)
+{
+	return userRepo.save(user);
+}
+
+public User getUserById(String userId)
+{
+	return userRepo.findById(userId);
+}
+
+public void deleteUserById(String userId)
+{
+	return userRepo.deleteById(userId);
+}
+
+public List<User>getAllUser()
+{
+	return userRepo.findAll();
+}
+
+4)Controller class
+
+@RestController
+@RequestMapping("/User")
+public class UserController
+{
+	@Autowired
+	private UserService userService;
+	
+	@PostMapping("/createUser")
+	public ResponseEntity<User>createUser(@RequestBody User user)
+	{
+		User createUser=userService.createUser(user);
+		return ResponseEntity.status(HttpStatus.Created).body(createUser);
+	}
+
+
+	@GetMapping("/getAllUser")
+	public ResponseEntity<List<User>> getAllUser()
+	{
+		List<User>getAllUsers=userService.getAllUser();
+		return ResponseEntity.Ok(getAllUsers);
+	}
+
+	@GetMapping("/{userId}")	
+	public ResponseEntity<User>getUserById(@PathVariable String userId)
+	{	
+		User getUser=userService.getUserById(userId);
+		return ResponseEntity.ok(getUser);
+	}
+
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<String>deleteUserById(@PathVariable String userId)
+	{
+		userService.DeleteUserById(userId);	
+		return new ResponseEntity<>("user Deleted Successfully",HttpStatus.ok);
+	}
+	
+		
+		
